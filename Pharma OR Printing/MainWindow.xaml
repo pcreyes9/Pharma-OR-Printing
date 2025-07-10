@@ -1,0 +1,53 @@
+﻿<Window x:Class="Pharma_OR_Printing.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Pharma_OR_Printing"
+        mc:Ignorable="d"
+        Title="Pharma OR Printing" Height="567" Width="740">
+    <Grid Margin="0,0,0,-6">
+        <Label Content="Philippine Society of Anesthesiologists, Inc.&#xD;&#xA;" HorizontalAlignment="Left" Margin="130,10,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" Height="33"/>
+        <Label Content="Room 102 PMA Bldg., North Avenue, 1105&#xD;&#xA;Quezon City, NCR, Second District Philippines&#xD;&#xA;Telefax No: 929-5852&#xD;&#xA;Non-VAT Reg. Tin: 001-031-600-00000" HorizontalAlignment="Left" Margin="130,35,0,0" VerticalAlignment="Top" Height="77" Width="336" FontStyle="Italic"/>
+        <Label Content="Business Style/Name:&#xD;&#xA;" HorizontalAlignment="Left" Margin="27,162,0,0" VerticalAlignment="Top" FontSize="15" Height="29"/>
+        <TextBox x:Name="businessNM_tb" HorizontalAlignment="Left" Margin="189,162,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="507" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Label Content="Pharma Name:&#xA;" HorizontalAlignment="Left" Margin="70,192,0,0" VerticalAlignment="Top" FontSize="15" Height="29"/>
+        <TextBox x:Name="pharmaNM_tb" HorizontalAlignment="Left" Margin="189,196,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="507" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA" TextChanged="pharmaNM_tb_TextChanged"/>
+        <Label Content="Address:" HorizontalAlignment="Left" Margin="27,234,0,0" VerticalAlignment="Top" FontSize="15" Height="29"/>
+        <RichTextBox x:Name="address_rtb" Margin="102,242,361,190">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <Label Content="Amount (PHP):" HorizontalAlignment="Left" Margin="379,245,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="amount_tb" Margin="498,250,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA" HorizontalAlignment="Left" Width="198"/>
+        <Label Content="TIN:" HorizontalAlignment="Left" Margin="450,272,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="tin_tb" HorizontalAlignment="Left" Margin="498,276,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Label Content="Form of Payment Details" HorizontalAlignment="Left" Margin="467,317,0,0" VerticalAlignment="Top" FontSize="15" Height="30" HorizontalContentAlignment="Right" FontWeight="Bold"/>
+        <Label Content="Bank:" HorizontalAlignment="Left" Margin="438,352,0,0" VerticalAlignment="Top" FontSize="15" Height="30" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="bank_tb" HorizontalAlignment="Left" Margin="498,356,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA" Text=""/>
+        <Label Content="No:" HorizontalAlignment="Left" Margin="450,380,0,0" VerticalAlignment="Top" FontSize="15" Height="28" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="amount_tb_Copy2" HorizontalAlignment="Left" Margin="498,384,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="160" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Label Content="No:" HorizontalAlignment="Left" Margin="450,380,0,0" VerticalAlignment="Top" FontSize="15" Height="28" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="no_tb" HorizontalAlignment="Left" Margin="498,384,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Label Content="Date:" HorizontalAlignment="Left" Margin="439,408,0,0" VerticalAlignment="Top" FontSize="15" Height="28" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="date_tb" HorizontalAlignment="Left" Margin="498,411,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Label Content="Specify:" HorizontalAlignment="Left" Margin="28,377,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="amount_tb_Copy" HorizontalAlignment="Left" Margin="94,384,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="285" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Label Content="Others:" HorizontalAlignment="Left" Margin="31,406,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="tin_tb_Copy" HorizontalAlignment="Left" Margin="94,411,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="285" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <Button x:Name="servIn_btn" Content="SERVICE INVOICE" HorizontalAlignment="Left" Margin="501,481,0,0" VerticalAlignment="Top" Width="116" FontWeight="Bold" Height="26"/>
+        <Button x:Name="print_btn" Content="PRINT" HorizontalAlignment="Left" Margin="626,481,0,0" VerticalAlignment="Top" Width="74" FontWeight="Bold" Height="26" Click="print_btn_Click"/>
+        <Label Content="OR No:" HorizontalAlignment="Left" Margin="31,443,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
+        <TextBox x:Name="tin_tb_Copy1" HorizontalAlignment="Left" Margin="94,448,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <DataGrid x:Name="pharma_dg" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="189,222,181,240" GridLinesVisibility="None" AutoGenerateColumns="False" HeadersVisibility="None" Visibility="Hidden" SelectionChanged="pharma_dg_SelectionChanged" IsReadOnly="True" SelectedIndex="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding pharma_name}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Image Margin="11,10,615,433" Source="/PSA_LOGO.png" Stretch="Fill" RenderTransformOrigin="0.693,0.439"/>
+
+    </Grid>
+</Window>
