@@ -4,13 +4,15 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Drawing;
+
 using System.Drawing.Printing;
 using System.Windows.Input;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Xml.Linq;
 using System;
 using System.Windows.Controls;
-using System.Diagnostics.Tracing; // For PrintDialog (WPF)
+using System.Diagnostics.Tracing;
+using System.Windows.Documents; // For PrintDialog (WPF)
 
 
 
@@ -23,7 +25,7 @@ namespace Pharma_OR_Printing
     public partial class MainWindow : Window
     {
         string conString = "Data Source=PSASERVER;Initial Catalog=PSADBLIVE;Persist Security Info=True;User ID=sa;Password=p$a@dm1n;";
-        string payment_date, words, printAmt;
+        string payment_date, words, printAmt, address, specifyTXT;
         double amount;
         PrintDocument printDoc = new PrintDocument();
 
@@ -115,6 +117,14 @@ namespace Pharma_OR_Printing
             // Get the current date and format it
             payment_date = DateTime.Now.ToString("MM/dd/yyyy");
 
+            address = new TextRange(address_rtb.Document.ContentStart, address_rtb.Document.ContentEnd).Text.Trim();
+
+            specifyTXT = specify_tb.Text;
+            int lineLength = 36;
+
+            specifyTXT = string.Join("\n", Enumerable.Range(0, (int)Math.Ceiling((double)specifyTXT.Length / lineLength))
+            .Select(i => specifyTXT.Substring(i * lineLength, Math.Min(lineLength, specifyTXT.Length - i * lineLength))));
+            //MessageBox.Show(specifyTXT);
 
             MessageBoxResult result = MessageBox.Show(
             "Print the following details? \n\n" +
@@ -122,7 +132,7 @@ namespace Pharma_OR_Printing
                 "Amount: " + printAmt + "\n" +
                 "Amt in Txt: " + words + "\n" +
                 "Date of payment: " + payment_date + "\n" +
-                "Address: " + address_rtb.ToString(),
+                "Address: " + address,
             // Message
             "Confirmation",                 // Title
             MessageBoxButton.YesNo);  // Buttons
@@ -146,25 +156,76 @@ namespace Pharma_OR_Printing
         {
             int wholePart = (int)amount;
             int cents = (int)Math.Round((amount - wholePart) * 100);
+            //MessageBox.Show(cents.ToString());
 
             string temp = NumberToWords(wholePart);
-            return $"{temp} Pesos and {cents:00}/100 Centavos";
+
+            if (cents == 0)
+            {
+                return $"{temp} Pesos Only";
+            }
+
+            return $"{temp} Pesos and {cents:00}/100 Centavos Only";
+        }
+
+        private void pharma_dg_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void pharmaNM_tb_LostFocus(object sender, RoutedEventArgs e)
+        {
+            pharma_dg.Visibility = Visibility.Collapsed;
+        }
+
+        private void address_rtb_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            string currentText = new TextRange(
+                address_rtb.Document.ContentStart,
+                address_rtb.Document.ContentEnd
+            ).Text;
+
+            if (currentText.Trim().Length >= 108)
+            {
+                e.Handled = true; // ❌ Block input
+            }
         }
 
         private void PrintPageHandler(object sender, PrintPageEventArgs e)
         {
-            
 
-            Font font = new Font("Arial", 10);
+            Font font = new Font("Arial", 10, System.Drawing.FontStyle.Regular);
+            Font addFont = new Font("Arial", 9, System.Drawing.FontStyle.Regular);
             float x = 100;
             float y = 100;
 
-            e.Graphics.DrawString("Paul Reyes", font, Brushes.Black, new System.Drawing.Point(175, 342));
+            SolidBrush blackBrush = new SolidBrush(System.Drawing.Color.Black);
+            e.Graphics.DrawString("SERVICE INVOICE", font, Brushes.Black, new System.Drawing.Point(457, 234));
+            System.Drawing.Rectangle boxRect = new System.Drawing.Rectangle(440, 253, 150, 15);
+            e.Graphics.FillRectangle(blackBrush, boxRect);
+
             e.Graphics.DrawString(payment_date, font, Brushes.Black, new System.Drawing.Point(583, 294));
-            e.Graphics.DrawString(printAmt, font, Brushes.Black, new System.Drawing.Point(612, 427));
-            e.Graphics.DrawString(words, font, Brushes.Black, new System.Drawing.Point(182, 405));
+            e.Graphics.DrawString(pharmaNM_tb.Text, font, Brushes.Black, new System.Drawing.Point(175, 342));
+            e.Graphics.DrawString(businessNM_tb.Text, font, Brushes.Black, new System.Drawing.Point(451, 355));
+            e.Graphics.DrawString(tin_tb.Text, font, Brushes.Black, new System.Drawing.Point(120, 362));
+
+            if (address.Length > 93)
+            {
+                e.Graphics.DrawString(address, addFont, Brushes.Black, new System.Drawing.Point(127, 385));
+            }
+            else
+            {
+                e.Graphics.DrawString(address, font, Brushes.Black, new System.Drawing.Point(127, 385));
+            }
+
+            e.Graphics.DrawString(words, font, Brushes.Black, new System.Drawing.Point(179, 405));
+            e.Graphics.DrawString(printAmt, font, Brushes.Black, new System.Drawing.Point(610, 427));
+            e.Graphics.DrawString(bank_tb.Text, font, Brushes.Black, new System.Drawing.Point(585, 498));
+            e.Graphics.DrawString(no_tb.Text, font, Brushes.Black, new System.Drawing.Point(585, 515));
+            e.Graphics.DrawString(date_tb.Text, font, Brushes.Black, new System.Drawing.Point(585, 531));
             e.Graphics.DrawString("Marsha F. Moreno", font, Brushes.Black, new System.Drawing.Point(575, 611));
-            
+            e.Graphics.DrawString(specifyTXT, addFont, Brushes.Black, new System.Drawing.Point(124, 659));
+
 
             //e.Graphics.DrawString(NumberToWords(int.Parse(amount_tb.Text)) + " Pesos", font, Brushes.Black, x, y + 30);
         }
