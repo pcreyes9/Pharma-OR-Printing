@@ -9,7 +9,8 @@ using System.Windows.Input;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Xml.Linq;
 using System;
-using System.Windows.Controls; // For PrintDialog (WPF)
+using System.Windows.Controls;
+using System.Diagnostics.Tracing; // For PrintDialog (WPF)
 
 
 
@@ -22,7 +23,8 @@ namespace Pharma_OR_Printing
     public partial class MainWindow : Window
     {
         string conString = "Data Source=PSASERVER;Initial Catalog=PSADBLIVE;Persist Security Info=True;User ID=sa;Password=p$a@dm1n;";
-        string payment_date;
+        string payment_date, words, printAmt;
+        double amount;
         PrintDocument printDoc = new PrintDocument();
 
         public MainWindow()
@@ -101,20 +103,34 @@ namespace Pharma_OR_Printing
 
         private void print_btn_Click(object sender, RoutedEventArgs e)
         {
+            // Convert the amount to double format for printing
+            double amount = double.Parse(amount_tb.Text);
+            var culture = new System.Globalization.CultureInfo("en-PH"); // English - Philippines
+            printAmt = amount.ToString("C", culture);
+            //MessageBox.Show(printAmt);
+
+            // Convert the amount to words
+            words = ConvertAmountToWords(amount);
+
+            // Get the current date and format it
             payment_date = DateTime.Now.ToString("MM/dd/yyyy");
+
 
             MessageBoxResult result = MessageBox.Show(
             "Print the following details? \n\n" +
                 "Name: " + pharmaNM_tb.Text + "\n" +
-                "Amount: " + amount_tb.Text + "\n" +
-                "Date of payment: " + payment_date, // Message
+                "Amount: " + printAmt + "\n" +
+                "Amt in Txt: " + words + "\n" +
+                "Date of payment: " + payment_date + "\n" +
+                "Address: " + address_rtb.ToString(),
+            // Message
             "Confirmation",                 // Title
             MessageBoxButton.YesNo);  // Buttons
             //MessageBoxImage.Question);      // Icon
 
             if (result == MessageBoxResult.Yes)
             {
-                MessageBox.Show(NumberToWords(int.Parse(amount_tb.Text)) + " Pesos", "PSA Receipt Printing");
+                //MessageBox.Show(NumberToWords(int.Parse(amount_tb.Text)) + " Pesos", "PSA Receipt Printing");
                 printDoc.PrinterSettings.PrinterName = "EPSON LX-310";
                 printDoc.PrintPage += new PrintPageEventHandler(PrintPageHandler);
                 printDoc.DefaultPageSettings.Landscape = true;
@@ -125,6 +141,14 @@ namespace Pharma_OR_Printing
             {
                 // Do something else
             }
+        }
+        private string ConvertAmountToWords(double amount)
+        {
+            int wholePart = (int)amount;
+            int cents = (int)Math.Round((amount - wholePart) * 100);
+
+            string temp = NumberToWords(wholePart);
+            return $"{temp} Pesos and {cents:00}/100 Centavos";
         }
 
         private void PrintPageHandler(object sender, PrintPageEventArgs e)
@@ -137,9 +161,10 @@ namespace Pharma_OR_Printing
 
             e.Graphics.DrawString("Paul Reyes", font, Brushes.Black, new System.Drawing.Point(175, 342));
             e.Graphics.DrawString(payment_date, font, Brushes.Black, new System.Drawing.Point(583, 294));
-            //e.Graphics.DrawString(amount, font, Brushes.Black, new System.Drawing.Point(612, 427));
+            e.Graphics.DrawString(printAmt, font, Brushes.Black, new System.Drawing.Point(612, 427));
+            e.Graphics.DrawString(words, font, Brushes.Black, new System.Drawing.Point(182, 405));
             e.Graphics.DrawString("Marsha F. Moreno", font, Brushes.Black, new System.Drawing.Point(575, 611));
-            //e.Graphics.DrawString(result + "Pesos Only", font, Brushes.Black, new System.Drawing.Point(182, 405));
+            
 
             //e.Graphics.DrawString(NumberToWords(int.Parse(amount_tb.Text)) + " Pesos", font, Brushes.Black, x, y + 30);
         }
