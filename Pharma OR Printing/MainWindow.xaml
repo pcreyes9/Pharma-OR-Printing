@@ -1,4 +1,5 @@
 ﻿<Window x:Class="Pharma_OR_Printing.MainWindow"
+        Icon="pharmacy.ico"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -39,13 +40,14 @@
         <Button x:Name="servIn_btn" Content="SERVICE INVOICE" HorizontalAlignment="Left" Margin="501,460,0,0" VerticalAlignment="Top" Width="116" FontWeight="Bold" Height="26"/>
         <Button x:Name="print_btn" Content="PRINT" HorizontalAlignment="Left" Margin="626,460,0,0" VerticalAlignment="Top" Width="74" FontWeight="Bold" Height="26" Click="print_btn_Click"/>
         <Label Content="OR No:" HorizontalAlignment="Left" Margin="36,452,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="tin_tb_Copy1" HorizontalAlignment="Left" Margin="99,457,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
+        <TextBox x:Name="orNo_tb" HorizontalAlignment="Left" Margin="99,457,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
         <DataGrid x:Name="pharma_dg" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="189,222,181,240" GridLinesVisibility="None" AutoGenerateColumns="False" HeadersVisibility="None" Visibility="Hidden" SelectionChanged="pharma_dg_SelectionChanged" IsReadOnly="True" SelectedIndex="1">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding pharma_name}" />
             </DataGrid.Columns>
         </DataGrid>
         <Image Margin="10,10,618,422" Source="/PSA_LOGO.png" Stretch="Fill"/>
+        <Button x:Name="history_btn" Content="HISTORY" HorizontalAlignment="Left" Margin="418,461,0,0" VerticalAlignment="Top" Width="74" FontWeight="Bold" Height="26" Click="history_btn_Click"/>
 
     </Grid>
 </Window>

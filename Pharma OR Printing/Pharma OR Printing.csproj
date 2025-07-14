@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="pharmacy.ico" />
     <Resource Include="PSA_LOGO.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
