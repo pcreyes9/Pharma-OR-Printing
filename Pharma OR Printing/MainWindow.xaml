@@ -37,17 +37,18 @@
         <TextBox x:Name="date_tb" HorizontalAlignment="Left" Margin="498,411,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="198" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
         <Label Content="Specify:" HorizontalAlignment="Left" Margin="28,377,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="specify_tb" HorizontalAlignment="Left" Margin="94,384,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="285" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA" MaxLength="72"/>
-        <Button x:Name="servIn_btn" Content="SERVICE INVOICE" HorizontalAlignment="Left" Margin="501,460,0,0" VerticalAlignment="Top" Width="116" FontWeight="Bold" Height="26"/>
+        <Button x:Name="servIn_btn" Content="SERVICE INVOICE" HorizontalAlignment="Left" Margin="501,460,0,0" VerticalAlignment="Top" Width="116" FontWeight="Bold" Height="26" Click="servIn_btn_Click"/>
         <Button x:Name="print_btn" Content="PRINT" HorizontalAlignment="Left" Margin="626,460,0,0" VerticalAlignment="Top" Width="74" FontWeight="Bold" Height="26" Click="print_btn_Click"/>
         <Label Content="OR No:" HorizontalAlignment="Left" Margin="36,452,0,0" VerticalAlignment="Top" FontSize="15" Height="29" HorizontalContentAlignment="Right"/>
         <TextBox x:Name="orNo_tb" HorizontalAlignment="Left" Margin="99,457,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="112" FontSize="15" BorderThickness="0,0,0,2" Background="#FFDEDEDE" SelectionBrush="#FF051CFA"/>
-        <DataGrid x:Name="pharma_dg" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="189,222,181,240" GridLinesVisibility="None" AutoGenerateColumns="False" HeadersVisibility="None" Visibility="Hidden" SelectionChanged="pharma_dg_SelectionChanged" IsReadOnly="True" SelectedIndex="1">
+        <DataGrid x:Name="pharma_dg" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="189,222,181,177" GridLinesVisibility="None" AutoGenerateColumns="False" HeadersVisibility="None" SelectionChanged="pharma_dg_SelectionChanged" IsReadOnly="True" SelectedIndex="1" Visibility="Hidden">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding pharma_name}" />
             </DataGrid.Columns>
         </DataGrid>
         <Image Margin="10,10,618,422" Source="/PSA_LOGO.png" Stretch="Fill"/>
         <Button x:Name="history_btn" Content="HISTORY" HorizontalAlignment="Left" Margin="418,461,0,0" VerticalAlignment="Top" Width="74" FontWeight="Bold" Height="26" Click="history_btn_Click"/>
+        <Button Content="CLEAR" HorizontalAlignment="Left" Margin="348,461,0,0" VerticalAlignment="Top" Height="26" Width="64" FontWeight="Bold" Click="Button_Click"/>
 
     </Grid>
 </Window>

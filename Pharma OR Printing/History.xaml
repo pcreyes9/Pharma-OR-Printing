@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:Pharma_OR_Printing"
         mc:Ignorable="d"
         Title="Pharma Payment History" Height="591" Width="1120"
-        Icon="pharmacy.ico">
+        Icon="pharmacy.ico" WindowStartupLocation="CenterScreen">
     <Grid>
-        <Label Content="Enter" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="14"/>
+        <Label Content="Enter Pharma Name / OR Number:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="14"/>
         <DataGrid x:Name="histo_dg"
           AutoGenerateColumns="False"
           IsReadOnly="True"
@@ -47,11 +47,21 @@
                 <DataGridTextColumn Header="Amount" Binding="{Binding amount}" Width="100" />
                 <DataGridTextColumn Header="Style" Binding="{Binding business_styleName}" Width="250" />
                 <DataGridTextColumn Header="Address" Binding="{Binding address}" Width="*" />
-                <DataGridTextColumn Header="Transaction Date" Binding="{Binding created_at}" Width="200" />
+                <DataGridTextColumn Header="Transaction Date"
+                    Binding="{Binding created_at, StringFormat={}{0:yyyy-MM-dd}}"
+                    Width="200">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="TextAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <TextBox x:Name="search_tb" HorizontalAlignment="Left" Margin="219,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" FontSize="14" Height="25" KeyDown="search_tb_KeyDown"/>
-        <ComboBox x:Name="catag_cmb" HorizontalAlignment="Left" Margin="52,14,0,0" VerticalAlignment="Top" Width="162" FontSize="14"/>
+        <TextBox x:Name="search_tb" HorizontalAlignment="Left" Margin="238,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="357" FontSize="14" Height="25" KeyDown="search_tb_KeyDown" TextChanged="search_tb_TextChanged"/>
+        <Button Content="EXPORT" HorizontalAlignment="Left" Margin="614,12,0,0" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" Width="85" Height="25" Click="Button_Click"/>
 
     </Grid>
 </Window>

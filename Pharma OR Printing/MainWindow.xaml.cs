@@ -1,17 +1,11 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Drawing;
 
 using System.Drawing.Printing;
 using System.Windows.Input;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Xml.Linq;
-using System;
-using System.Windows.Controls;
-using System.Diagnostics.Tracing;
 using System.Windows.Documents;
 using System.Text; // For PrintDialog (WPF)
 
@@ -131,8 +125,6 @@ namespace Pharma_OR_Printing
                         cmd.ExecuteNonQuery();
                     }
 
-                    
-
                     //MessageBox.Show("Data successfully added.");
 
                 }
@@ -149,7 +141,7 @@ namespace Pharma_OR_Printing
             // CHECK IF PHARMA NAME IS ALREADY IN THE DATABASE
             if (PharmaNameExists(pharmaNM_tb.Text))
             {
-                MessageBox.Show("Pharma name already exists.");
+                //MessageBox.Show("Pharma name already exists.");
             }
             else
             {
@@ -159,15 +151,30 @@ namespace Pharma_OR_Printing
 
                 if (ans == MessageBoxResult.Yes)
                 {
-                    tableInsert();
+                    try
+                    {
+                        //MessageBox.Show(dbAmount.ToString());
+                        //decimal decAmount = decimal.Parse(amount_tb.Text);
 
-                    //MessageBox.Show(NumberToWords(int.Parse(amount_tb.Text)) + " Pesos", "PSA Receipt Printing");
-                    printDoc.PrinterSettings.PrinterName = "EPSON LX-310";
-                    printDoc.PrintPage += new PrintPageEventHandler(PrintPageHandler);
-                    printDoc.DefaultPageSettings.Landscape = true;
+                        using (SqlConnection con = new SqlConnection(conString))
+                        {
+                            con.Open();
+                            string query = "INSERT INTO pharmas (pharma_name) VALUES (@name)";
+                            using (SqlCommand cmd = new SqlCommand(query, con))
+                            {
+                                cmd.Parameters.AddWithValue("@name", pharmaNM_tb.Text);
 
-                    printDoc.Print();
-                    cleanVars();
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            //MessageBox.Show("Data successfully added.");
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("An error occurred while inserting data: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 else if (ans == MessageBoxResult.No)
                 {
@@ -185,22 +192,27 @@ namespace Pharma_OR_Printing
 
             // Convert the amount to words
             words = ConvertAmountToWords(amount);
-            words = CutStringWithoutCuttingWord(words, 70);
-            MessageBox.Show(words);
+            words = CutStringWithoutCuttingWord(words, 60);
+            //MessageBox.Show(words);
 
 
             // Get the current date and format it
             payment_date = DateTime.Now.ToString("MM/dd/yyyy");
 
             // Get the address from the RichTextBox and convert it to a string
+            // Get text from RichTextBox
             address = new TextRange(address_rtb.Document.ContentStart, address_rtb.Document.ContentEnd).Text.Trim();
+
+            // Wrap the address
+            address = CutStringWithoutCuttingWord(address, 76);
+            //MessageBox.Show(address, "Address for Printing");
+
 
             // Cut lines of specify text
             specifyTXT = specify_tb.Text;
-            int lineLength = 36;
+            specifyTXT = CutStringWithoutCuttingWord(specifyTXT, 29);
 
-            specifyTXT = string.Join("\n", Enumerable.Range(0, (int)Math.Ceiling((double)specifyTXT.Length / lineLength))
-            .Select(i => specifyTXT.Substring(i * lineLength, Math.Min(lineLength, specifyTXT.Length - i * lineLength))));
+            
             //MessageBox.Show(specifyTXT);
 
             MessageBoxResult result = MessageBox.Show(
@@ -246,8 +258,17 @@ namespace Pharma_OR_Printing
 
         private void history_btn_Click(object sender, RoutedEventArgs e)
         {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is History)
+                {
+                    window.Activate(); // Bring it to front if it's already open
+                    return;
+                }
+            }
+
             History historyWindow = new History();
-            historyWindow.Show(); // Non-blocking (user can interact with both windows)
+            historyWindow.Show();
         }
 
         private void address_rtb_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -257,7 +278,7 @@ namespace Pharma_OR_Printing
                 address_rtb.Document.ContentEnd
             ).Text;
 
-            if (currentText.Trim().Length >= 108)
+            if (currentText.Trim().Length >= 140)
             {
                 e.Handled = true; // ❌ Block input
             }
@@ -265,41 +286,42 @@ namespace Pharma_OR_Printing
 
         private void PrintPageHandler(object sender, PrintPageEventArgs e)
         {
-
-            Font font = new Font("Arial", 10, System.Drawing.FontStyle.Regular);
-            Font addFont = new Font("Arial", 9, System.Drawing.FontStyle.Regular);
+            Font font = new Font("Courier New", 11, System.Drawing.FontStyle.Regular);
+            Font addFont = new Font("Courier New", 9, System.Drawing.FontStyle.Regular);
             float x = 100;
             float y = 100;
 
+            // Draw header only once
+            e.Graphics.DrawString("SERVICE INVOICE", font, Brushes.Black, new PointF(470, 250));
+
             SolidBrush blackBrush = new SolidBrush(System.Drawing.Color.Black);
-            e.Graphics.DrawString("SERVICE INVOICE", font, Brushes.Black, new System.Drawing.Point(470, 250));
             System.Drawing.Rectangle boxRect = new System.Drawing.Rectangle(453, 269, 160, 17);
             e.Graphics.FillRectangle(blackBrush, boxRect);
 
-            e.Graphics.DrawString(payment_date, font, Brushes.Black, new System.Drawing.Point(583, 310));
-            e.Graphics.DrawString(pharmaNM_tb.Text, font, Brushes.Black, new System.Drawing.Point(175, 355));
-            e.Graphics.DrawString(businessNM_tb.Text, font, Brushes.Black, new System.Drawing.Point(451, 375));
-            e.Graphics.DrawString(tin_tb.Text, font, Brushes.Black, new System.Drawing.Point(120, 378));
-
-            if (address.Length > 93)
+            if (!string.IsNullOrEmpty(pharmaNM_tb.Text))
             {
-                e.Graphics.DrawString(address, addFont, Brushes.Black, new System.Drawing.Point(135, 398));
+                e.Graphics.DrawString(payment_date, font, Brushes.Black, new PointF(583, 310));
+                e.Graphics.DrawString(pharmaNM_tb.Text, font, Brushes.Black, new PointF(175, 355));
+                e.Graphics.DrawString(businessNM_tb.Text, font, Brushes.Black, new PointF(451, 375));
+                e.Graphics.DrawString(tin_tb.Text, font, Brushes.Black, new PointF(120, 378));
+
+                if (address.Length > 76)
+                {
+                    e.Graphics.DrawString(address, addFont, Brushes.Black, new PointF(135, 395));
+                }
+                else
+                {
+                    e.Graphics.DrawString(address, font, Brushes.Black, new PointF(135, 398));
+                }
+
+                e.Graphics.DrawString(words, font, Brushes.Black, new PointF(179, 421));
+                e.Graphics.DrawString(printAmt, font, Brushes.Black, new PointF(610, 443));
+                e.Graphics.DrawString(bank_tb.Text, font, Brushes.Black, new PointF(585, 514));
+                e.Graphics.DrawString(no_tb.Text, font, Brushes.Black, new PointF(585, 531));
+                e.Graphics.DrawString(date_tb.Text, font, Brushes.Black, new PointF(585, 547));
+                e.Graphics.DrawString("Marsha F. Moreno", font, Brushes.Black, new PointF(575, 627));
+                e.Graphics.DrawString(specifyTXT, addFont, Brushes.Black, new PointF(129, 675));
             }
-            else
-            {
-                e.Graphics.DrawString(address, font, Brushes.Black, new System.Drawing.Point(135, 398));
-            }
-
-            e.Graphics.DrawString(words, font, Brushes.Black, new System.Drawing.Point(179, 421));
-            e.Graphics.DrawString(printAmt, font, Brushes.Black, new System.Drawing.Point(610, 443));
-            e.Graphics.DrawString(bank_tb.Text, font, Brushes.Black, new System.Drawing.Point(585, 514));
-            e.Graphics.DrawString(no_tb.Text, font, Brushes.Black, new System.Drawing.Point(585, 531));
-            e.Graphics.DrawString(date_tb.Text, font, Brushes.Black, new System.Drawing.Point(585, 547));
-            e.Graphics.DrawString("Marsha F. Moreno", font, Brushes.Black, new System.Drawing.Point(575, 627));
-            e.Graphics.DrawString(specifyTXT, addFont, Brushes.Black, new System.Drawing.Point(124, 675));
-
-
-            //e.Graphics.DrawString(NumberToWords(int.Parse(amount_tb.Text)) + " Pesos", font, Brushes.Black, x, y + 30);
         }
         private string ConvertAmountToWords(double amount)
         {
@@ -315,6 +337,37 @@ namespace Pharma_OR_Printing
             }
 
             return $"{temp} Pesos and {cents:00}/100 Centavos Only";
+        }
+
+        private void servIn_btn_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show(
+            "Print SERVICE INVOICE BAR?",
+            // Message
+            "Confirmation",                 // Title
+            MessageBoxButton.YesNo);  // Buttons
+            //MessageBoxImage.Question);      // Icon
+
+            if (result == MessageBoxResult.Yes)
+            {
+                printDoc.PrinterSettings.PrinterName = "EPSON LX-310";
+                printDoc.PrintPage += new PrintPageEventHandler(PrintPageHandler);
+                printDoc.DefaultPageSettings.Landscape = true;
+
+                printDoc.Print();
+                cleanVars();
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                // Do something else
+            }
+
+            
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            cleanVars();
         }
 
         static string NumberToWords(int number)
@@ -351,7 +404,60 @@ namespace Pharma_OR_Printing
             return ""; // out of range (should not happen with current input limits)
         }
 
-        public string CutStringWithoutCuttingWord(string text, int maxLineLength)
+        //public string CutStringWithoutCuttingWord(string text, int maxLineLength)
+        //{
+        //    if (string.IsNullOrWhiteSpace(text))
+        //        return string.Empty;
+
+        //    var words = text.Split(' ');
+        //    var result = new StringBuilder();
+        //    var currentLine = new StringBuilder();
+
+        //    foreach (var word in words)
+        //    {
+        //        if (currentLine.Length + word.Length + 1 > maxLineLength)
+        //        {
+        //            result.AppendLine(currentLine.ToString().TrimEnd());
+        //            currentLine.Clear();
+        //        }
+        //        currentLine.Append(word + " ");
+        //    }
+
+        //    if (currentLine.Length > 0)
+        //        result.AppendLine(currentLine.ToString().TrimEnd());
+
+        //    return result.ToString();
+        //}
+
+        //public static string WrapTextByLength(string input, int maxLength)
+        //{
+        //    if (string.IsNullOrWhiteSpace(input))
+        //        return string.Empty;
+
+        //    List<string> lines = new List<string>();
+        //    string[] para = input.Split(' ');
+
+        //    string currentLine = "";
+
+        //    foreach (string word in para)
+        //    {
+        //        if ((currentLine + word).Length > maxLength)
+        //        {
+        //            lines.Add(currentLine.TrimEnd());
+        //            currentLine = "";
+        //        }
+        //        currentLine += word + " ";
+        //    }
+
+        //    if (!string.IsNullOrWhiteSpace(currentLine))
+        //    {
+        //        lines.Add(currentLine.TrimEnd());
+        //    }
+
+        //    return string.Join("\n", lines);
+        //}
+
+        public static string CutStringWithoutCuttingWord(string text, int maxLineLength)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return string.Empty;
@@ -376,6 +482,7 @@ namespace Pharma_OR_Printing
             return result.ToString();
         }
 
+
         bool PharmaNameExists(string pharmaName)
         {
             using (SqlConnection con = new SqlConnection(conString))
@@ -393,20 +500,23 @@ namespace Pharma_OR_Printing
             }
         }
 
+        
+
+
         private void cleanVars()
         {
-            //orNo_tb.Text = "";
-            //businessNM_tb.Text = "";
-            //pharmaNM_tb.Text = "";
-            //amount_tb.Text = "";
-            //tin_tb.Text = "";
-            //address_rtb.Document.Blocks.Clear();
-            //bank_tb.Text = "";
-            //no_tb.Text = "";
-            //date_tb.Text = "";
-            //specify_tb.Text = "";
-            //words = "";
-            //printAmt = "";
+            businessNM_tb.Text = "";
+            pharmaNM_tb.Text = "";
+            address_rtb.Document.Blocks.Clear();
+            amount_tb.Text = "";
+            tin_tb.Text = "";
+            bank_tb.Text = "";
+            no_tb.Text = "";
+            date_tb.Text = "";
+            specify_tb.Text = "";
+            words = "";
+            printAmt = "";
+            orNo_tb.Text = "";
         }
     }
 }
